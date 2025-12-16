@@ -2,7 +2,7 @@ package com.cedutdev.papiros.dto;
 
 import java.util.List;
 
-public record ArticleDetail(
+public record ArticleDetailDTO(
         Long id,
         String title,
         String content,
