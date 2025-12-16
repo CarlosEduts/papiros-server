@@ -1,0 +1,33 @@
+package com.cedutdev.papiros.controller;
+
+import com.cedutdev.papiros.dto.CommentDTO;
+import com.cedutdev.papiros.dto.CommentResponseDTO;
+import com.cedutdev.papiros.service.CommentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/articles")
+@RequiredArgsConstructor
+public class CommentController {
+
+    private final CommentService commentService;
+
+    @PostMapping("/{articleId}/comments")
+    public ResponseEntity<CommentResponseDTO> create(@PathVariable Long articleId, @RequestBody CommentDTO data) {
+        return ResponseEntity.ok(commentService.createComment(articleId, data));
+    }
+
+    @PutMapping("/{articleId}/comments/{commentId}")
+    public ResponseEntity<CommentResponseDTO> update(@PathVariable Long commentId, @RequestBody CommentDTO data) {
+        commentService.updateComment(commentId, data);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{articleId}/comments/{commentId}")
+    public ResponseEntity<CommentResponseDTO> delete(@PathVariable Long commentId) {
+        commentService.deleteComment(commentId);
+        return ResponseEntity.noContent().build();
+    }
+}
