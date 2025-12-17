@@ -6,7 +6,7 @@ import com.cedutdev.papiros.dto.ArticleDTO;
 import com.cedutdev.papiros.dto.ArticleDetailDTO;
 import com.cedutdev.papiros.dto.ArticleResponseDTO;
 import com.cedutdev.papiros.dto.CommentResponseDTO;
-import com.cedutdev.papiros.repository.ArticleLikeRepository;
+import com.cedutdev.papiros.repository.LikeRepository;
 import com.cedutdev.papiros.repository.ArticleRepository;
 import com.cedutdev.papiros.repository.CommentRepository;
 import jakarta.transaction.Transactional;
@@ -26,7 +26,7 @@ import java.util.Objects;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
-    private final ArticleLikeRepository articleLikeRepository;
+    private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
 
     public List<ArticleResponseDTO> findAllArticles() {
@@ -38,7 +38,7 @@ public class ArticleService {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Article not found"));
 
-        Long likes = articleLikeRepository.countByArticle(article);
+        Long likes = likeRepository.countByArticle(article);
 
         List<CommentResponseDTO> comments = commentRepository
                 .findCommentByArticleId(id)

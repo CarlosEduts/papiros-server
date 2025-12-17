@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ArticleLikeRepository extends JpaRepository<ArticleLike, Long> {
+public interface LikeRepository extends JpaRepository<ArticleLike, Long> {
     Optional<ArticleLike> findByArticleAndUser(Article article, User user);
 
     Long countByArticle(Article article);
