@@ -2,6 +2,7 @@ package com.cedutdev.papiros.controller;
 
 import com.cedutdev.papiros.dto.LoginDTO;
 import com.cedutdev.papiros.dto.RegisterDTO;
+import com.cedutdev.papiros.dto.TokenDTO;
 import com.cedutdev.papiros.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid LoginDTO data) {
+    public ResponseEntity<TokenDTO> login(@RequestBody @Valid LoginDTO data) {
         return ResponseEntity.ok(authenticationService.authenticateAndGenerateToken(data));
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid RegisterDTO data) {
+    public ResponseEntity<Void> register(@RequestBody @Valid RegisterDTO data) {
         boolean registerSuccess = authenticationService.registerNewUser(data);
 
         if (!registerSuccess) {
