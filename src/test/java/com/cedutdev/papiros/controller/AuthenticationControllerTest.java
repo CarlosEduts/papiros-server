@@ -19,7 +19,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -50,7 +51,7 @@ class AuthenticationControllerTest {
         LoginDTO loginDTO = new LoginDTO("john-doe", "password123");
         TokenDTO tokenDTO = new TokenDTO("jwt-token-exemplo");
 
-        when(authenticationService.authenticateAndGenerateToken(any(LoginDTO.class)))
+        when(authenticationService.authenticateAndGenerateToken(eq(loginDTO)))
                 .thenReturn(tokenDTO);
 
         mockMvc.perform(post("/auth/login")
@@ -59,6 +60,8 @@ class AuthenticationControllerTest {
                         .content(objectMapper.writeValueAsString(loginDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("jwt-token-exemplo"));
+
+        verify(authenticationService, times(1)).authenticateAndGenerateToken(any());
     }
 
 
@@ -69,8 +72,36 @@ class AuthenticationControllerTest {
         when(authenticationService.registerNewUser(any())).thenReturn(true);
 
         mockMvc.perform(post("/auth/register")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Deve retornar 400 quando a validação do DTO falhar, name: null")
+    void register_ShouldReturn400_WhenDtoIsInvalid() throws Exception {
+        RegisterDTO dto = new RegisterDTO(null, "john-doe", "password");
+
+        mockMvc.perform(post("/auth/register")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(authenticationService);
+    }
+
+    @Test
+    @DisplayName("Deve retornar 400 quando o serviço não conseguir registrar o usuário")
+    void register_ShouldReturn400_WhenServiceReturnsFalse() throws Exception {
+        RegisterDTO dto = new RegisterDTO("John Doe", "john-doe", "password123");
+        when(authenticationService.registerNewUser(any())).thenReturn(false); // Simula uma falha ao registrar usuário
+
+        mockMvc.perform(post("/auth/register")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
     }
 }
