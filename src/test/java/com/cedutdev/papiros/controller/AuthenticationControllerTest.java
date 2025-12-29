@@ -46,10 +46,10 @@ class AuthenticationControllerTest {
 
 
     @Test
-    @DisplayName("Deve retornar 200 e TokenDTO ao fazer login com sucesso")
+    @DisplayName("Deve retornar '200' e o TokenDTO ao fazer login com sucesso")
     void login_ShouldReturnToken_WhenDataIsValid() throws Exception {
         LoginDTO loginDTO = new LoginDTO("john-doe", "password123");
-        TokenDTO tokenDTO = new TokenDTO("jwt-token-exemplo");
+        TokenDTO tokenDTO = new TokenDTO("jwt-token-exemple");
 
         when(authenticationService.authenticateAndGenerateToken(eq(loginDTO)))
                 .thenReturn(tokenDTO);
@@ -66,8 +66,8 @@ class AuthenticationControllerTest {
 
 
     @Test
-    @DisplayName("Deve retornar 200 ao registrar com sucesso")
-    void register_Success() throws Exception {
+    @DisplayName("Deve retornar '201' ao registrar usuário com sucesso")
+    void register_ShouldReturnCreated_WhenUserIsRegisteredWithSuccess() throws Exception {
         RegisterDTO dto = new RegisterDTO("John Doe", "john-doe", "password123");
         when(authenticationService.registerNewUser(any())).thenReturn(true);
 
@@ -75,12 +75,12 @@ class AuthenticationControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
-    @DisplayName("Deve retornar 400 quando a validação do DTO falhar, name: null")
-    void register_ShouldReturn400_WhenDtoIsInvalid() throws Exception {
+    @DisplayName("Deve retornar '400' quando a validação do DTO falhar")
+    void register_ShouldReturnBadRequest_WhenDtoIsInvalid() throws Exception {
         RegisterDTO dto = new RegisterDTO(null, "john-doe", "password");
 
         mockMvc.perform(post("/auth/register")
@@ -93,8 +93,8 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar 400 quando o serviço não conseguir registrar o usuário")
-    void register_ShouldReturn400_WhenServiceReturnsFalse() throws Exception {
+    @DisplayName("Deve retornar '400' quando não for possível registrar o usuário")
+    void register_ShouldReturnBadRequest_WhenServiceReturnsFalse() throws Exception {
         RegisterDTO dto = new RegisterDTO("John Doe", "john-doe", "password123");
         when(authenticationService.registerNewUser(any())).thenReturn(false); // Simula uma falha ao registrar usuário
 

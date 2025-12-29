@@ -6,6 +6,7 @@ import com.cedutdev.papiros.dto.TokenDTO;
 import com.cedutdev.papiros.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,6 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
