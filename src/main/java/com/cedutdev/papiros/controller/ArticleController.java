@@ -8,7 +8,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -30,7 +32,14 @@ public class ArticleController {
 
     @PostMapping
     public ResponseEntity<ArticleResponseDTO> create(@RequestBody @Valid ArticleDTO data) {
-        return ResponseEntity.ok(articleService.createArticle(data));
+        ArticleResponseDTO responseDTO = articleService.createArticle(data);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDTO.id())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDTO);
     }
 
     @PutMapping("/{id}")

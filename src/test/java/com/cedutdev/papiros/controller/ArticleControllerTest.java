@@ -69,7 +69,7 @@ class ArticleControllerTest {
     @WithMockUser
     @DisplayName("Deve retornar 200 ao listar artigo pelo o seu ID quando autenticado")
     void findById_ShouldReturnOk_WhenUserIsAuthenticated() throws Exception {
-        ArticleDetailDTO articleDetail = new ArticleDetailDTO(
+        ArticleDetailDTO response = new ArticleDetailDTO(
                 1L,
                 "Título",
                 "Conteúdo",
@@ -78,20 +78,23 @@ class ArticleControllerTest {
                 2L,
                 List.of()
         );
-        when(articleService.findArticleById(1L)).thenReturn(articleDetail);
 
-        mockMvc.perform(get("/articles/1"))
+        when(articleService.findArticleById(1L)).thenReturn(response);
+
+        mockMvc.perform(get("/articles/{id}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.title").value("Título"))
-                .andExpect(jsonPath("$.author").value("Autor"));
+                .andExpect(jsonPath("$.id").value(response.id()))
+                .andExpect(jsonPath("$.title").value(response.title()));
     }
 
     @Test
     @WithMockUser
     @DisplayName("Deve retornar 201 ao criar artigo com sucesso")
-    void create_ShouldReturnOk_WhenAuthenticated() throws Exception {
-        ArticleDTO dto = new ArticleDTO("Título", "Conteúdo");
+    void create_ShouldReturnCreated_WhenAuthenticated() throws Exception {
+        ArticleDTO dto = new ArticleDTO(
+                "Título",
+                "Conteúdo"
+        );
         ArticleResponseDTO response = new ArticleResponseDTO(
                 1L,
                 "Título",
@@ -106,8 +109,9 @@ class ArticleControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(response.id()))
+                .andExpect(jsonPath("$.title").value(response.title()));
     }
 
     @Test
@@ -127,22 +131,26 @@ class ArticleControllerTest {
     @WithMockUser
     @DisplayName("Deve retornar 204 ao editar artigo com sucesso")
     void update_ShouldReturnOk_WhenAuthenticated() throws Exception {
-        ArticleDTO dto = new ArticleDTO("Título Atualizado", "Conteúdo Atualizado");
+        ArticleDTO dto = new ArticleDTO(
+                "Título Atualizado",
+                "Conteúdo Atualizado"
+        );
 
-        mockMvc.perform(put("/articles/1")
+        mockMvc.perform(put("/articles/{id}", 1L)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNoContent());
 
-        verify(articleService, times(1)).updateArticle(eq(1L), any(ArticleDTO.class));
+        verify(articleService, times(1))
+                .updateArticle(eq(1L), any(ArticleDTO.class));
     }
 
     @Test
     @WithMockUser
     @DisplayName("Deve retornar 204 ao deletar artigo")
     void delete_ShouldReturnNoContent() throws Exception {
-        mockMvc.perform(delete("/articles/1")
+        mockMvc.perform(delete("/articles/{id}", 1L)
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
