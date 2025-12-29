@@ -48,7 +48,7 @@ class ArticleControllerTest {
     private UserDetailsService userDetailsService;
 
     @Test
-    @DisplayName("Deve retornar 403 ao listar artigos sem estar autenticado")
+    @DisplayName("Deve retornar '403' ao listar artigos sem estar autenticado")
     void listAll_ShouldReturnUnauthorized_WhenUserNotAuthenticated() throws Exception {
         mockMvc.perform(get("/articles"))
                 .andExpect(status().isForbidden());
@@ -56,8 +56,8 @@ class ArticleControllerTest {
 
     @Test
     @WithMockUser // Simula um usuário autenticado padrão
-    @DisplayName("Deve retornar 200 ao listar artigos quando autenticado")
-    void listAll_ShouldReturnOk_WhenUserIsAuthenticated() throws Exception {
+    @DisplayName("Deve retornar '200' ao listar todos os artigos")
+    void listAll_ShouldReturnOk_WhenGetAllArticlesWithSuccess() throws Exception {
         when(articleService.findAllArticles()).thenReturn(List.of());
 
         mockMvc.perform(get("/articles"))
@@ -67,10 +67,11 @@ class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 200 ao listar artigo pelo o seu ID quando autenticado")
-    void findById_ShouldReturnOk_WhenUserIsAuthenticated() throws Exception {
+    @DisplayName("Deve retornar '200' ao listar artigo pelo o seu ID")
+    void findById_ShouldReturnOk_WhenGetArticleByIdWithSuccess() throws Exception {
+        Long articleId = 1L;
         ArticleDetailDTO response = new ArticleDetailDTO(
-                1L,
+                articleId,
                 "Título",
                 "Conteúdo",
                 "Autor",
@@ -79,9 +80,9 @@ class ArticleControllerTest {
                 List.of()
         );
 
-        when(articleService.findArticleById(1L)).thenReturn(response);
+        when(articleService.findArticleById(articleId)).thenReturn(response);
 
-        mockMvc.perform(get("/articles/{id}", 1L))
+        mockMvc.perform(get("/articles/{id}", articleId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(response.id()))
                 .andExpect(jsonPath("$.title").value(response.title()));
@@ -89,8 +90,8 @@ class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 201 ao criar artigo com sucesso")
-    void create_ShouldReturnCreated_WhenAuthenticated() throws Exception {
+    @DisplayName("Deve retornar '201' ao criar artigo com sucesso")
+    void create_ShouldReturnCreated_WhenCreateArticleWithSuccess() throws Exception {
         ArticleDTO dto = new ArticleDTO(
                 "Título",
                 "Conteúdo"
@@ -116,8 +117,8 @@ class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 400 ao tentar criar artigo com dados inválidos")
-    void create_ShouldReturnBadRequest_WhenDataInvalid() throws Exception {
+    @DisplayName("Deve retornar '400' ao tentar criar artigo com dados inválidos")
+    void create_ShouldReturnBadRequest_WhenDataIsInvalid() throws Exception {
         ArticleDTO invalidDto = new ArticleDTO("", "");
 
         mockMvc.perform(post("/articles")
@@ -129,31 +130,34 @@ class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 204 ao editar artigo com sucesso")
-    void update_ShouldReturnOk_WhenAuthenticated() throws Exception {
+    @DisplayName("Deve retornar '204' ao atualizar artigo com sucesso")
+    void update_ShouldReturnNoContent_WhenUpdateArticleWithSuccess() throws Exception {
         ArticleDTO dto = new ArticleDTO(
                 "Título Atualizado",
                 "Conteúdo Atualizado"
         );
+        Long articleId = 1L;
 
-        mockMvc.perform(put("/articles/{id}", 1L)
+        mockMvc.perform(put("/articles/{id}", articleId)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNoContent());
 
         verify(articleService, times(1))
-                .updateArticle(eq(1L), any(ArticleDTO.class));
+                .updateArticle(eq(articleId), any(ArticleDTO.class));
     }
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 204 ao deletar artigo")
-    void delete_ShouldReturnNoContent() throws Exception {
-        mockMvc.perform(delete("/articles/{id}", 1L)
+    @DisplayName("Deve retornar '204' ao deletar artigo com sucesso")
+    void delete_ShouldReturnNoContent_WhenDeleteArticleWithSuccess() throws Exception {
+        Long articleId = 1L;
+
+        mockMvc.perform(delete("/articles/{id}", articleId)
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        verify(articleService).deleteArticle(1L);
+        verify(articleService).deleteArticle(articleId);
     }
 }
