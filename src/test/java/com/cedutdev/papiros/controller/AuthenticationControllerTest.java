@@ -59,7 +59,7 @@ class AuthenticationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-token-exemplo"));
+                .andExpect(jsonPath("$.token").value(tokenDTO.token()));
 
         verify(authenticationService, times(1)).authenticateAndGenerateToken(any());
     }
