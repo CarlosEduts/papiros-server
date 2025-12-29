@@ -3,6 +3,7 @@ package com.cedutdev.papiros.controller;
 import com.cedutdev.papiros.dto.CommentDTO;
 import com.cedutdev.papiros.dto.CommentResponseDTO;
 import com.cedutdev.papiros.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +16,12 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{articleId}/comments")
-    public ResponseEntity<CommentResponseDTO> create(@PathVariable Long articleId, @RequestBody CommentDTO data) {
+    public ResponseEntity<CommentResponseDTO> create(@PathVariable Long articleId, @RequestBody @Valid CommentDTO data) {
         return ResponseEntity.ok(commentService.createComment(articleId, data));
     }
 
     @PutMapping("/{articleId}/comments/{commentId}")
-    public ResponseEntity<CommentResponseDTO> update(@PathVariable Long commentId, @RequestBody CommentDTO data) {
+    public ResponseEntity<CommentResponseDTO> update(@PathVariable Long commentId, @RequestBody @Valid CommentDTO data) {
         commentService.updateComment(commentId, data);
         return ResponseEntity.noContent().build();
     }
