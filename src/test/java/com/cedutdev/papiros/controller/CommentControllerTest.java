@@ -46,30 +46,30 @@ class CommentControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 201 ao criar comentário com sucesso")
-    void create_ShouldReturnOk_WhenCommentIsCreated() throws Exception {
+    @DisplayName("Deve retornar '201' ao criar comentário com sucesso")
+    void create_ShouldReturnCreated_WhenCommentIsCreatedWithSuccess() throws Exception {
         CommentDTO dto = new CommentDTO("Conteúdo");
-
-        CommentResponseDTO responseDTO = new CommentResponseDTO(
+        CommentResponseDTO responseDto = new CommentResponseDTO(
                 1L,
                 "Conteúdo",
                 "Autor",
                 "Data de Criação"
         );
 
-        when(commentService.createComment(any(Long.class), any(CommentDTO.class))).thenReturn(responseDTO);
+        when(commentService.createComment(any(Long.class), any(CommentDTO.class)))
+                .thenReturn(responseDto);
 
-        mockMvc.perform(post("/articles/{articleId}/comments", 1L)
+        mockMvc.perform(post("/articles/{articleId}/comments", responseDto.id())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(responseDto.id()));
     }
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 400 ao tentar criar um comentário com dados inválidos")
+    @DisplayName("Deve retornar '400' ao tentar criar um comentário com dados inválidos")
     void create_ShouldReturnBadRequest_WhenCommentIsNotCreated() throws Exception {
         CommentDTO invalidDto = new CommentDTO("");
 
@@ -82,8 +82,8 @@ class CommentControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 204 ao editar um comentário com sucesso")
-    void update_ShouldReturnOk_WhenAuthenticated() throws Exception {
+    @DisplayName("Deve retornar '204' ao editar um comentário com sucesso")
+    void update_ShouldReturnNoContent_WhenUpdateCommentWithSuccess() throws Exception {
         CommentDTO dto = new CommentDTO("Conteúdo Atualizado");
 
         mockMvc.perform(put("/articles/{articleId}/comments/{commentId}", 1L, 1L)
@@ -97,8 +97,8 @@ class CommentControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Deve retornar 204 ao deletar artigo")
-    void delete_ShouldReturnNoContent() throws Exception {
+    @DisplayName("Deve retornar '204' ao deletar artigo")
+    void delete_ShouldReturnNoContent_WhenDeleteCommentWithSuccess() throws Exception {
         mockMvc.perform(delete("/articles/{articleId}/comments/{commentId}", 1L, 1L)
                         .with(csrf()))
                 .andExpect(status().isNoContent());

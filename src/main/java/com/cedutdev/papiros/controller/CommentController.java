@@ -7,6 +7,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("articles")
@@ -17,7 +20,14 @@ public class CommentController {
 
     @PostMapping("/{articleId}/comments")
     public ResponseEntity<CommentResponseDTO> create(@PathVariable Long articleId, @RequestBody @Valid CommentDTO data) {
-        return ResponseEntity.ok(commentService.createComment(articleId, data));
+        CommentResponseDTO responseDTO = commentService.createComment(articleId, data);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{commentId}")
+                .buildAndExpand(responseDTO.id())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDTO);
     }
 
     @PutMapping("/{articleId}/comments/{commentId}")
