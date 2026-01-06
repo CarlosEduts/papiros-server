@@ -159,6 +159,21 @@ class ArticleServiceTest {
     }
 
     @Test
+    @DisplayName("Deve manter os dados atuais ao atualizar o artigo quando o title e o content não for fornecido")
+    void updateArticle1_ShouldUpdateArticleWithSuccess() {
+        mockSecurityContext(mockUser);
+        ArticleDTO dto = new ArticleDTO("", "");
+
+        when(articleRepository.findById(10L)).thenReturn(Optional.of(mockArticle));
+
+        articleService.updateArticle(10L, dto);
+
+        verify(articleRepository).save(mockArticle);
+        assertThat(mockArticle.getTitle()).isEqualTo("title");
+        assertThat(mockArticle.getContent()).isEqualTo("content");
+    }
+
+    @Test
     @DisplayName("Deve retornar AccessDeniedException quando o usuário não tiver permissão/for o mesmo")
     void updateArticle_AccessDenied() {
         User invader = new User();
