@@ -1,97 +1,78 @@
 # Papiros Server
 
-O **Papiros Server** é a API central do ecossistema Papiros. Desenvolvido com Java e Spring Boot, o servidor gerencia a persistência de dados, autenticação de usuários e as regras de negócio para a plataforma de artigos.
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen) ![Java](https://img.shields.io/badge/Java-17%2B-orange) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen) ![License](https://img.shields.io/badge/license-MIT-blue)
 
-> **Status:** 🛠️ Em Desenvolvimento
+O **Papiros Server** é a API RESTful central do ecossistema Papiros. Desenvolvida em Java com Spring Boot, esta
+aplicação é responsável por gerenciar toda a lógica de negócios, persistência de dados e segurança da plataforma de
+artigos.
 
-## 🚀 Tecnologias Utilizadas
+O client front-end para esta API pode ser encontrado
+aqui: [Papiros Client](https://github.com/CarlosEduts/papiros-client).
 
-* **Java 17+** (ou versão superior)
-* **Spring Boot 3**
-* **Spring Security & JWT** (Para autenticação e autorização)
-* **Maven** (Gerenciador de dependências)
+## Tecnologias
 
----
+O projeto utiliza uma arquitetura baseada no ecossistema Spring:
 
-## 🔐 Autenticação
+**Core & Framework**
 
-A API utiliza **JSON Web Tokens (JWT)** para proteger rotas sensíveis.
+- Java (17+)
+- Spring Boot
+- Maven (Gerenciamento de dependências)
 
-1. O usuário realiza o registro e o login.
-2. O login retorna um token de acesso.
-3. O token deve ser enviado no Header de todas as requisições protegidas:
-   `Authorization: Bearer <seu_token>`
+**Segurança**
 
----
+- Spring Security
+- JWT
+- Spring Security Test
 
-## 📑 Documentação da API
+**Dados & Infraestrutura**
 
-### Autenticação (`/auth`)
+- MySQL
+- Docker
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| `POST` | `/auth/register` | Cria uma nova conta de usuário. |
-| `POST` | `/auth/login` | Autentica o usuário e retorna o token JWT. |
+**Documentação**
 
-**Exemplo de Corpo (Register):**
+- Springdoc OpenAPI (Swagger UI)
 
-```json
-{
-  "name": "Nome do Usuário",
-  "username": "user123",
-  "password": "password!123"
-}
-```
+## Variáveis de Ambiente
 
-**Exemplo de Corpo (Login):**
+Para que a aplicação funcione corretamente, é necessário configurar as seguintes variáveis de ambiente.
 
-```json
-{
-  "username": "user123",
-  "password": "password!123"
-}
-```
+| Variável      | Descrição                                    | Valor Padrão |
+|:--------------|:---------------------------------------------|:-------------|
+| `DB_HOST`     | Endereço do servidor MySQL (ex: `localhost`) | `localhost`  |
+| `DB_NAME`     | Nome do esquema/banco de dados               | -            |
+| `DB_USER`     | Usuário de autenticação do MySQL             | `root`       |
+| `DB_PASSWORD` | Senha do usuário do banco de dados           | -            |
+| `JWT_SECRET`  | Chave secreta para assinatura dos tokens JWT | -            |
 
----
+## Documentação da API
 
-### Artigos (`/articles`)
+Com a aplicação em execução, a documentação interativa (Swagger UI) pode ser acessada em:
 
-Todas as rotas abaixo (exceto se configurado o contrário) exigem o Header `Authorization`.
+> http://localhost:8080/swagger-ui/index.html
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| `GET` | `/articles` | Lista todos os artigos. |
-| `GET` | `/articles/{id}` | Busca os detalhes de um artigo específico. |
-| `POST` | `/articles` | Cria um novo artigo. |
-| `PUT` | `/articles/{id}` | Atualiza o título ou conteúdo de um artigo. |
-| `DELETE` | `/articles/{id}` | Remove um artigo permanentemente. |
-| `POST` | `/articles/{id}/like` | Registra um "curtir" no artigo. |
+*(Ajuste a porta 8080 caso sua configuração seja diferente)*
 
-**Exemplo de Criação de Artigo:**
+## Roadmap e Status
 
-```json
-{
-  "title": "Título do Artigo",
-  "content": "Conteúdo completo aqui..."
-}
-```
+O projeto encontra-se atualmente em estágio **Em Desenvolvimento**.
 
----
+* [x] Configuração inicial do Spring Boot e Segurança
+* [x] Implementação de Autenticação JWT
+* [x] CRUD de Artigos, Comentários e Gostei (Regras de Negócio)
+* [ ] Configuração de Docker para ambiente de Produção
+* [ ] Deploy em ambiente de Produção
 
-### Comentários (`/articles/{id}/comments`)
+## Contribuição
 
-Gerencie a interação em artigos específicos através dos IDs.
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| `POST` | `/articles/{id}/comments` | Adiciona um comentário a um artigo. |
-| `PUT` | `/articles/{id}/comments/{commentId}` | Edita um comentário existente. |
-| `DELETE` | `/articles/{id}/comments/{commentId}` | Remove um comentário. |
+## Contato e Feedback
 
-**Exemplo de Criação de Comentário:**
+Obrigado por acessar este repositório!
 
-```json
-{
-  "content": "Conteúdo do comentário aqui..."
-}
-```
+Estou sempre aberto a sugestões e melhorias. Se você tiver alguma dúvida sobre a implementação ou quiser trocar uma
+ideia sobre as tecnologias utilizadas (Spring Boot, Docker, JWT), sinta-se à vontade para entrar em contato.
+
+Se este projeto te ajudou de alguma forma, considere deixar uma ⭐ para apoiar!
