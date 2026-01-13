@@ -1,0 +1,13 @@
+services:
+  database:
+    image: mysql
+    container_name: papiros
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - papiros_data:/var/lib/mysql
+
+volumes:
+  papiros_data:
